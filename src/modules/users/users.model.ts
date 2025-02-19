@@ -1,5 +1,11 @@
 import { HydratedDocument, model, Schema } from "mongoose";
-import { TAddress, TFullName, TOrders, TUSER } from "./users.interface";
+import {
+  TAddress,
+  TFullName,
+  TOrders,
+  TUSER,
+  UserModel,
+} from "./users.interface";
 import bcrypt from "bcrypt";
 import config from "../../config";
 
@@ -14,7 +20,7 @@ const addressSchema = new Schema<TAddress>({
   country: { type: String, required: true },
 });
 
-const orderSchema = new Schema<TOrders>({
+const orderSchema = new Schema<TOrders, UserModel>({
   productName: { type: String, required: true },
   price: { type: Number, required: true },
   quantity: { type: Number, required: true },
@@ -49,4 +55,12 @@ userSchema.post("save", async function (doc, next) {
   next();
 });
 
-export const Users = model<TUSER>("Users", userSchema);
+// user exists check with static method
+userSchema.statics.isUserExists = async function (userId: string) {
+  const existUser = Users.findOne({
+    userId,
+  });
+  return existUser;
+};
+
+export const Users = model<TUSER, UserModel>("Users", userSchema);

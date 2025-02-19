@@ -59,9 +59,66 @@ const getSingleUser = async (req: Request, res: Response) => {
     });
   }
 };
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const { user } = req.body;
+    const result = await UserService.updatedUserIntoDB(userId, user);
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong",
+      error: error,
+    });
+  }
+};
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    await UserService.deleteUserFromDB(userId);
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong",
+      error: error,
+    });
+  }
+};
+const ordersBySpecificUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UserService.findOrderForSpecificUser(userId);
+    res.status(200).json({
+      success: true,
+      message: "Order fetched successfully!",
+      data:result
+    });
+  } catch (error: any) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || "Something went wrong",
+      error: error,
+    });
+  }
+};
 
 export const UserController = {
   createUser,
   getUsers,
   getSingleUser,
+  deleteUser,
+  updateUser,
+  ordersBySpecificUser
 };
