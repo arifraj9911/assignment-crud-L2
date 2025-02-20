@@ -14,7 +14,7 @@ const addressSchema = z.object({
 });
 
 // Orders Schema
-const orderSchema = z.object({
+export const orderSchema = z.object({
   productName: z.string().min(1, "Product name is required"),
   price: z.number().min(0, "Price must be a positive number"),
   quantity: z.number().min(1, "Quantity must be at least 1"),
@@ -31,5 +31,5 @@ export const userValidationSchema = z.object({
   isActive: z.boolean().default(false),
   hobbies: z.array(z.string()).optional(),
   address: addressSchema.optional(),
-  orders: z.array(orderSchema).min(1, "At least one order is required"),
+  orders: z.array(orderSchema).min(1, "At least one order is required").optional(),
 });

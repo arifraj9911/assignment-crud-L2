@@ -36,7 +36,7 @@ const userSchema = new Schema<TUSER>({
   isActive: { type: Boolean, default: false },
   hobbies: { type: [String], required: false },
   address: { type: addressSchema, required: false },
-  orders: { type: [orderSchema], required: true },
+  orders: { type: [orderSchema], required: false },
 });
 
 // pre document middleware

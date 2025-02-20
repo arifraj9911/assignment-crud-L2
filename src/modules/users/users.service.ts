@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from "mongoose";
 import { TUSER } from "./users.interface";
 import { Users } from "./users.model";
@@ -132,11 +133,65 @@ const findOrderForSpecificUser = async (id: string) => {
   }
 };
 
+const appendOrdersToDB = async (
+  id: string,
+  newOrders: { productName: string; price: number; quantity: number }
+): Promise<any> => {
+  try {
+    const user = await Users.findById(id);
+
+    if (!user) {
+      throw new Error("Users not found");
+    }
+
+    if (!Array.isArray(user.orders)) {
+      user.orders = [];
+    }
+
+    user.orders.push(newOrders);
+
+    const updatedUser = user.save();
+
+    return updatedUser;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+const totalOrderPriceSingleUser = async (id: string): Promise<number> => {
+  try {
+    const result = await Users.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(id) } },
+      { $unwind: "$orders" },
+      {
+        $group: {
+          _id: null,
+          totalPrice: {
+            $sum: { $multiply: ["$orders.price", "$orders.quantity"] },
+          },
+        },
+      },
+    ]);
+
+    if (!result) {
+      throw new Error("User not found");
+    }
+
+    return result.length > 0 ? result[0].totalPrice : 0;
+  } catch (error) {
+    console.log("Error calculating total order price:", error);
+    throw error;
+  }
+};
+
 export const UserService = {
   createUserIntoDB,
   getUserFromDB,
   getSingleUsersFromDB,
   deleteUserFromDB,
   updatedUserIntoDB,
-  findOrderForSpecificUser
+  findOrderForSpecificUser,
+  appendOrdersToDB,
+  totalOrderPriceSingleUser
 };
