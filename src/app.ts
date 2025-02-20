@@ -11,7 +11,7 @@ app.use(cors());
 app.use("/api/v1/users", UsersRouter);
 
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello World!");
+  res.send("Hello World! Live from vercel cli,,,,change to see github");
 });
 
 export default app;
